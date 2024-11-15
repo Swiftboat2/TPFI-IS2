@@ -2,19 +2,29 @@ import json
 from decimal import Decimal
 from CorporateLog import CorporateLog
 from CorporateData import CorporateData
-
+from singleton import SingletonMeta
 # Función para convertir objetos Decimal a float
 def decimal_default(obj):
     if isinstance(obj, Decimal):
         return float(obj)  # Convertir Decimal a float
     raise TypeError(f"Type {obj.__class__.__name__} not serializable")
 
-class InterfazParaAWS:
+class InterfazParaAWS(metaclass=SingletonMeta):
     def __init__(self, session_id, cpu_id):
         self.session_id = session_id
         self.cpu_id = cpu_id
         self.log_instance = CorporateLog.getInstance()
         self.data_instance = CorporateData.getInstance()
+
+        self.data_instance_2 = CorporateData.getInstance()
+
+        self.es_singleton()
+
+    def es_singleton(self):    
+        if self.data_instance is self.data_instance_2:
+            return "es singleton"
+        else:
+            return "no es singleton"
 
     def registrar_log(self):
         result = self.log_instance.post(self.session_id)
